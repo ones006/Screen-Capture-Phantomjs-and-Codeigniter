@@ -4,11 +4,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 /**
  * inspired by https://github.com/microweber/screen
  * @ClassName Phantomcapture
- * @package	KCT Frame
+ * @package	onesFrame
  * @author	Ones Lynxs 
- * @copyright	Ones Lynxs
- * @license	MIT
- * @link	
+ * @copyright MIT License
+ * @link #
  * @since	Version 1.0.0
  * @filesource
  */
@@ -21,16 +20,15 @@ class Phantomcapture
 	private $url = 'http://localhost';
 	private $filename = 'phantomcapture.png';
 	private $backgroundcolor = '#FFFFFF';
-    /**
-     * summary
-     */
-    public function __construct($config = array())
-    {
-        empty($config) OR $this->initialize($config);
-		log_message('info', 'Phantomcapture Class Initialized');
-    }
+	private $file_template = 'capture';
 
-    /**
+	public function __construct($config = array())
+	{
+		empty($config) OR $this->initialize($config);
+		log_message('info', 'Phantomcapture Class Initialized');
+	}
+
+	/**
 	 * Initialize preferences
 	 *
 	 * @param	array	$config
@@ -83,11 +81,16 @@ class Phantomcapture
 
 		if (!is_file($jobpath)) {
 			// Now we write the code to a js file
-			$resultstring = $this->gettemplateresult('capture', $data);
+			$resultstring = $this->gettemplateresult($this->file_template, $data);
 			file_put_contents($jobpath, $resultstring);
 		}
 
-		$binpath = '';//PHANTOMJS.'bin' . DIRECTORY_SEPARATOR;
+		if(PHP_OS == 'WINNT'){
+			$binpath = PHANTOMJS.'bin' . DIRECTORY_SEPARATOR;
+		}else{
+			$binpath = '';
+		}
+		
 		$command = sprintf("%sphantomjs %s", $binpath, $jobpath);
 		$result = system(escapeshellcmd($command));
 
